@@ -1,4 +1,4 @@
-# Diálogos entre Ciencias Básicas y Especialidades (dcbye2019)
+# dcbye2019
 Matemática aplicada a los Videojuegos - Diálogos entre Ciencias Básicas y Especialidades
 
 [Link a la presentation](https://docs.google.com/presentation/d/10RDvWqXDt5-xpRJ99lrus4uNXreyxbpjxtuIFhkYhBA/edit?usp=sharing)
@@ -16,6 +16,8 @@ Matemática aplicada a los Videojuegos - Diálogos entre Ciencias Básicas y Esp
 
 [Ing. Mariano Gonzalez]() <mago.utn@gmail.com>
 
+### Colaborador
+[Ing. Mariano Banquiero](https://github.com/mbanquiero) <mariano@lepton.com.ar>
 
 ## Modo de uso del mini motor de fisica para ejemplos.
 El motor esta realizado con Java Script y puede ser ejecutado en Chrome para ver sus resultados.
