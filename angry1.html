@@ -1,0 +1,83 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<script type="text/javascript" src="engine/math.js"></script>
+<script type="text/javascript" src="engine/body.js"></script>
+<script type="text/javascript" src="engine/world.js"></script>
+<script type="text/javascript" src="engine/collision.js"></script>
+<script type="text/javascript" src="engine/contact.js"></script>
+<script type="text/javascript" src="engine/constraint.js"></script>
+<script type="text/javascript" src="engine/ragdoll.js"></script>
+<script type="text/javascript">
+
+function loadscene()
+{
+	// Creo un piso
+  var p = _world.AddBox(40, 60, 80, 5);
+  p.SetStatic();
+	p.color = 'rgb(255,0,255)';
+
+	// Creo un circulo
+  _world.AddCircle(40,0,2);
+  //_world.AddCircle(45,0,2);
+  //_world.AddCircle(50,0,3);
+  //_world.AddCircle(35,0,5);
+  //_world.AddCircle(40,20,10);
+
+  init = true;
+
+}
+
+function Update()
+{
+    _world.Update(fixed_dt);
+}
+
+function Render()
+{
+    if (canvas.getContext)
+    {
+        // borro la pantalla
+        ctx.fillStyle = 'rgba(0,0,0,255)';
+        ctx.fillRect(0,0,2000,2000);
+		// dibujo la escena esquematica con el motor
+	    _world.Render(ctx,ox,oy,ex,ey);
+    }
+}
+
+function RenderLoop()
+{
+    if (!init)
+		return;
+
+  	Update();
+  	Render();
+}
+
+var canvas;
+var ctx;
+var	ex = 10;
+var ey = 10;
+var ox = 20;
+var oy = 20;
+
+var fixed_dt = 1.0/60.0;								// avance del tiempo constante
+var _world = new World();
+var gravity = new Vector2( 0, 10 ); //variable global para el world
+var init = false;
+
+function main()
+{
+  canvas = document.getElementById('mycanvas');
+  ctx = canvas.getContext('2d');
+	loadscene();
+  setInterval(RenderLoop, fixed_dt*100);
+}
+
+
+</script>
+</head>
+<body onload="main();">
+	<canvas id="mycanvas" width="1000" height="700"></canvas>
+</body>
+</html>

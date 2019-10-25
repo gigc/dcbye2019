@@ -1,0 +1,140 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script type="text/javascript" src="engine/math.js"></script>
+<script type="text/javascript">
+
+// bolita en movimiento
+var posisionInicial = new Vector2(100,100);
+var velocidad = new Vector2(20,0);
+var gravedad = new Vector2(0,9.8);
+var posisionActual = new Vector2(0,0);
+var radio = 30;
+// obstaculo circulo
+var circuloPos = new Vector2(200,250);
+var circuloRadio = 50;
+function generarMovimiento()
+{
+integrarVelocidad()
+colisionContraBordes()
+
+
+var normal = vec2_substract(posisionActual, circuloPos);
+var dist_sqr = normal.lengthSqr(); //x * x + y * y;
+var radiusSum = circuloRadio + radio;
+if(dist_sqr >= radiusSum * radiusSum)
+{
+		//no hay colision.
+} else {
+	var distance = Math.sqrt(dist_sqr);
+	var distPenetration = radiusSum - distance;
+	var normalContacto = normal.multiply(1/distance); //como ya calcule la normal y la distancia hago esto en lugar de normalizar.
+	var contactPosition = vec2_add(vec2_multiply(normal, circuloRadio), circuloPos);
+
+	// v = i - 2 * dot(i, n) * n
+	velocidad = vec2_add(velocidad , vec2_multiply(normalContacto,-2*dot(velocidad, normalContacto)));
+	// y nos falta tener en cuenta la restitucion y otras cosas.
+}
+}
+
+function draw()
+{
+	if (canvas.getContext)
+	{
+		recuadroFondo()
+
+		// Generar movimiento:
+		generarMovimiento()
+
+		// dibujo las bolitas
+		dibujarBolitas();
+	}
+}
+function integrarVelocidad()
+{
+	// ecuacion simple de movimiento
+	// x(final) = x(inicial) + v(inicial)*t + 1/2 * a * t^2.
+	var diferencialAceleracion = vec2_multiply(gravedad, elapsed_time); // { x*t , y*t }
+	velocidad.add(diferencialAceleracion);
+	var diferencialVelocidad = vec2_multiply(velocidad, elapsed_time); // { x*t , y*t }
+	posisionActual = posisionInicial.add(diferencialVelocidad); // { x + vx , y + vy }
+}
+function colisionContraBordes()
+{
+	// 2- verifico los limites
+	if(posisionActual.x<radio)
+	{
+		// rebote izquierdo
+		posisionActual.x = 2*radio - posisionActual.x; //no dejo que pase el radio de la bolita
+		velocidad.x *= -1;
+	}
+	else if(posisionActual.x > DX-radio)
+	{
+		// rebote derecho
+		posisionActual.x = (DX-radio)*2 - posisionActual.x;
+		velocidad.x *= -1;
+	}
+
+	if(posisionActual.y < radio)
+	{
+		// rebote arriba
+		posisionActual.y = 2*posisionActual.y;
+		velocidad.y *= -1;
+	}
+	else
+	if(posisionActual.y > DY-radio)
+	{
+		// rebote abajo
+		posisionActual.y = (DY-radio)*2 - posisionActual.y;
+		velocidad.y *= -1;
+	}
+}
+function recuadroFondo()
+{
+	ctx.fillStyle = 'rgba(255,255,255,255)';
+	ctx.fillRect(0,0,1000,700);
+	ctx.fillStyle = 'rgba(192,255,192,255)';
+	ctx.fillRect(OX,OY ,DX,DY);
+}
+
+function dibujarBolitas()
+{
+	posisionInicial.copyFrom(posisionActual);
+	ctx.drawImage(img,OX + posisionInicial.x - radio, OY + posisionInicial.y - radio, 2*radio,2*radio);
+
+	ctx.fillStyle = 'rgba(255,0,255,255)';
+	ctx.beginPath();
+	ctx.arc(OX + circuloPos.x, OY + circuloPos.y, circuloRadio, 0, Math.PI*2,true);
+	ctx.closePath();
+	ctx.fill();
+}
+function animate()
+{
+	canvas = document.getElementById('mycanvas');
+	ctx = canvas.getContext('2d');
+
+	setInterval(draw, 1/60);
+}
+
+var canvas;
+var ctx;
+var time = 0;
+var elapsed_time = 1/60;
+
+//origen cuadrado
+var OX = 200;
+var OY = 100;
+//tamaño cuadrado
+var DX = 400;
+var DY = 500;
+
+// imagen
+var img = new Image();
+img.src = 'ball.png';
+
+</script>
+</head>
+<body onload="animate();">
+	<canvas id="mycanvas" width="1000" height="700"></canvas>
+</body>
+</html>

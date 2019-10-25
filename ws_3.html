@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script type="text/javascript" src="engine/math.js"></script>
+<script type="text/javascript">
+
+var posisionInicial = new Vector2(100,100);
+var velocidad = new Vector2(20,0);
+var gravedad = new Vector2(0,9.8);
+var posisionActual = new Vector2(0,0);
+function generarMovimiento()
+{
+// ecuacion simple de movimiento
+// x(final) = x(inicial) + v(inicial)*t + 1/2 * a * t^2.
+
+var diferencialAceleracion = vec2_multiply(gravedad, elapsed_time); // { x*t , y*t }
+velocidad.add(diferencialAceleracion);
+var diferencialVelocidad = vec2_multiply(velocidad, elapsed_time); // { x*t , y*t }
+posisionActual = posisionInicial.add(diferencialVelocidad); // { x + vx , y + vy }
+
+// 2- verifico los limites
+if(posisionActual.x<radio)
+{
+	// rebote izquierdo
+	posisionActual.x = 2*radio - posisionActual.x; //no dejo que pase el radio de la bolita
+	velocidad.x *= -1; // x*-1 entonces voy hacia el otro lado
+	//en los rebotes hay algo que se llama restitucion, que hace que pierda algo de velocidad al rebotar.
+	//se puede hacer el calculo de elsticidad o simplemente quitarle velocidad.
+	//velocidad.x *= -0.5
+}
+else if(posisionActual.x > DX-radio)
+{
+	// rebote derecho
+	posisionActual.x = (DX-radio)*2 - posisionActual.x;
+	velocidad.x *= -1; //x*-1 entonces voy hacia el otro lado
+	//velocidad.x *= -0.5
+}
+
+if(posisionActual.y < radio)
+{
+	// rebote arriba
+	posisionActual.y = 2*posisionActual.y;
+	velocidad.y *= -1;
+}
+else
+if(posisionActual.y > DY-radio)
+{
+	// rebote abajo
+	posisionActual.y = (DY-radio)*2 - posisionActual.y;
+	velocidad.y *= -1;
+	//en los rebotes hay algo que se llama restitucion, que hace que pierda algo de velocidad al rebotar.
+	//se puede hacer el calculo de elsticidad o simplemente quitarle velocidad.
+	//velocidad.y *= -0.9
+}
+
+}
+
+function draw()
+{
+	if (canvas.getContext)
+	{
+		recuadroFondo()
+
+		// Generar movimiento:
+		generarMovimiento()
+
+		// dibujo la bolita
+		dibujarBolita();
+	}
+}
+
+function recuadroFondo()
+{
+	ctx.fillStyle = 'rgba(255,255,255,255)';
+	ctx.fillRect(0,0,1000,700);
+	ctx.fillStyle = 'rgba(192,255,192,255)';
+	ctx.fillRect(OX,OY ,DX,DY);
+}
+
+function dibujarBolita(pos)
+{
+	posisionInicial.copyFrom(posisionActual);
+	ctx.drawImage(img,OX + posisionInicial.x - radio, OY + posisionInicial.y - radio, 2*radio,2*radio);
+}
+function animate()
+{
+	canvas = document.getElementById('mycanvas');
+	ctx = canvas.getContext('2d');
+
+	setInterval(draw, 1/60);
+}
+
+var canvas;
+var ctx;
+var time = 0;
+var elapsed_time = 1/60;
+
+//origen cuadrado
+var OX = 200;
+var OY = 100;
+//tamaño cuadrado
+var DX = 400;
+var DY = 500;
+
+// imagen
+var img = new Image();
+img.src = 'ball.png';
+var radio = 30;
+
+
+</script>
+</head>
+<body onload="animate();">
+	<canvas id="mycanvas" width="1000" height="700"></canvas>
+</body>
+</html>
